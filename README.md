@@ -13,18 +13,49 @@ Install `rus-diff` in your project:
 Usage example:
 
     var rusDiff = require('rus-diff').rusDiff
+
     var a = {
-        one: 1,
-        foo: 'hello'
+      foo: {
+        bb: {
+          inner: {
+            this_is_a: 1,
+            to_rename: "Hello"
+          }
+        },
+        aa: 1
+      },
+      bar: 1,
+      replace_me: 1
     }
+
     var b = {
-        two: 2,
-        bar: 'hello'
+      foo: {
+        bb: {
+          inner: {
+            this_is_b: 2
+          }
+        },
+        cc: {
+          new_val: 2
+        }
+      },
+      bar2: 2,
+      zz: 2,
+      renamed: "Hello",
+      replace_me: 2
     }
+
     console.log(rusDiff(a, b))
 
-    // { '$rename': { foo: 'bar' },
-    //  '$unset': { one: true },
-    //  '$set': { two: 2 } }
+Produces diff:
+
+    { '$rename': { 'foo.bb.inner.to_rename': 'renamed' },
+      '$unset': { bar: true, 'foo.aa': true, 'foo.bb.inner.this_is_a': true },
+      '$set': 
+       { bar2: 2,
+         'foo.bb.inner.this_is_b': 2,
+         'foo.cc': { new_val: 2 },
+         replace_me: 2,
+         zz: 2 } }
 
 For more usage examples please see [spec](spec) directory.

@@ -10,6 +10,11 @@ describe 'rusDiff', ->
     assert.equal false, rusDiff {foo:bar:1}, {foo:bar:1}
     assert.equal false, rusDiff {foo:1}, {foo:1}
 
+  it 'should produce simple diffs', ->
+    assert.deepEqual { '$set': { '0': 2, '1': 1 } }, rusDiff [1, 2], [2, 1]
+    assert.deepEqual { '$set': { bar: 1, foo: 2 } }, rusDiff {foo:1,bar:2}, {bar:1,foo:2}
+    assert.deepEqual { '$rename': { foo: 'bar' } }, rusDiff {foo:1}, {bar:1}
+
   it 'should produce scoped diff', ->
     a =
       foo:
