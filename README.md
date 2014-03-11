@@ -12,7 +12,7 @@ Install `rus-diff` in your project:
 
 Usage example:
 
-    var rusDiff = require('rus-diff').rusDiff
+    var diff = require('rus-diff').diff
 
     var a = {
       foo: {
@@ -45,7 +45,7 @@ Usage example:
       replace_me: 2
     }
 
-    console.log(rusDiff(a, b))
+    console.log(diff(a, b))
 
 Produces diff:
 

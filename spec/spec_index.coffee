@@ -1,19 +1,21 @@
 assert = require 'assert'
-{rusDiff} = require '../src'
+{diff} = require '../src'
 
-describe 'rusDiff', ->
+describe 'diff', ->
   it 'should produce no difference', ->
-    assert.equal false, rusDiff [], []
-    assert.equal false, rusDiff [1], [1]
-    assert.equal false, rusDiff [1, 2, 3], [1, 2, 3]
-    assert.equal false, rusDiff {}, {}
-    assert.equal false, rusDiff {foo:bar:1}, {foo:bar:1}
-    assert.equal false, rusDiff {foo:1}, {foo:1}
+    assert.equal false, diff [], []
+    assert.equal false, diff [1], [1]
+    assert.equal false, diff [1, 2, 3], [1, 2, 3]
+    assert.equal false, diff {}, {}
+    assert.equal false, diff {foo:bar:1}, {foo:bar:1}
+    assert.equal false, diff {foo:1}, {foo:1}
+    assert.equal false, diff {foo:1}, {foo:1}, 'my.scope', inc: true
 
   it 'should produce simple diffs', ->
-    assert.deepEqual { '$set': { '0': 2, '1': 1 } }, rusDiff [1, 2], [2, 1]
-    assert.deepEqual { '$set': { bar: 1, foo: 2 } }, rusDiff {foo:1,bar:2}, {bar:1,foo:2}
-    assert.deepEqual { '$rename': { foo: 'bar' } }, rusDiff {foo:1}, {bar:1}
+    assert.deepEqual { '$set': { '0': 2, '1': 1 } }, diff [1, 2], [2, 1]
+    assert.deepEqual { '$inc': { '0': 1, '1': -1 } }, diff [1, 2], [2, 1], null, inc: true
+    assert.deepEqual { '$set': { bar: 1, foo: 2 } }, diff {foo:1,bar:2}, {bar:1,foo:2}
+    assert.deepEqual { '$rename': { foo: 'bar' } }, diff {foo:1}, {bar:1}
 
   it 'should produce scoped diff', ->
     a =
@@ -53,4 +55,4 @@ describe 'rusDiff', ->
         "my.value.replace_me": 2
         "my.value.zz": 2
 
-    assert.deepEqual r, rusDiff a, b, ['my', 'value']
+    assert.deepEqual r, diff a, b, ['my', 'value']
