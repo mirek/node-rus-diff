@@ -59,3 +59,45 @@ Produces diff:
          zz: 2 } }
 
 For more usage examples please see [spec](spec) directory.
+
+Exported functions:
+
+    // Generate diff between a and b JSON objects.
+    // prefix can be set to an array or string to scope (prefix) keys,
+    //   ie. 'foo.bar' means all changes will have keys starting with 'foo.bar...'.
+    // options.inc = true can be set to enable $inc part for number changes.
+    diff(a, b, prefix = [], options = {})
+
+    // Apply delta diff on the JSON object a. If you don't want to mutate a you
+    // can clone it before passing to apply:
+    //   apply(clone(a), delta)
+    apply(a, delta)
+
+And some less important, utility functions:
+
+    // JSON object deep copy.
+    clone(a)
+
+    // Resolve key path on the object. Returns a tuple [a, path] where a
+    // is resolved object and path is an array of last component or multiple
+    // unresolved components.
+    //
+    // a - object
+    // path - an array or dot separated key path
+    //
+    // For example, having a document:
+    //
+    //   var a = { hello: { in: { nested: { world: '!' } } } }
+    // 
+    //   resolve a, 'hello.in.nested'
+    //
+    // Returns [ { nested: { world: '!' } }, [ 'nested' ] ]
+    //
+    //   resolve a, 'hello.in.nested.something.other'
+    //
+    // Returns [ { world: '!' }, [ 'something', 'other' ] ]
+    //
+    resolve(a, path)
+
+    // Convert non array path into array based key path.
+    arrize(path)
