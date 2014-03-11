@@ -1,0 +1,3 @@
+excludeInFileChooser = "{$excludeInFileChooser,node_modules}"
+excludeInBrowser = "{$excludeInBrowser}"
+excludeInFolderSearch = "{$excludeInFolderSearch,node_modules}"

@@ -1,0 +1,35 @@
+{
+  "name": "rus-diff",
+  "version": "0.0.1",
+  "description": "MongoDB compatible JSON diff.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "bin/grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mirek/node-rus-diff.git"
+  },
+  "keywords": [
+    "json",
+    "diff",
+    "mongo",
+    "mongodb"
+  ],
+  "author": "Mirek Rusin http://github.com/mirek",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mirek/node-rus-diff/issues"
+  },
+  "homepage": "https://github.com/mirek/node-rus-diff",
+  "devDependencies": {
+    "grunt-mocha-test": "^0.9.4",
+    "mocha": "^1.17.1",
+    "grunt-cli": "^0.1.13",
+    "grunt": "^0.4.3",
+    "coffee-script": "^1.7.1",
+    "grunt-contrib-coffee": "^0.10.1",
+    "grunt-codo": "^0.1.0",
+    "grunt-contrib-watch": "^0.5.3"
+  }
+}
