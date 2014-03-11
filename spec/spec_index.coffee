@@ -3,7 +3,12 @@ assert = require 'assert'
 
 describe 'rusDiff', ->
   it 'should produce no difference', ->
-    assert.deepEqual {}, rusDiff {}, {}
+    assert.equal false, rusDiff [], []
+    assert.equal false, rusDiff [1], [1]
+    assert.equal false, rusDiff [1, 2, 3], [1, 2, 3]
+    assert.equal false, rusDiff {}, {}
+    assert.equal false, rusDiff {foo:bar:1}, {foo:bar:1}
+    assert.equal false, rusDiff {foo:1}, {foo:1}
 
   it 'should produce scoped diff', ->
     a =

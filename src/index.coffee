@@ -7,7 +7,7 @@
 # @param [Boolean] rename Internal
 # @param [Object] garbage Internal
 #
-# @return [Object] Difference between b - a JSON objects.
+# @return [Object] Difference between b - a JSON objects or false if objects are the same.
 #
 rusDiff = (a, b, stack = [], rename = true, garbage = {}) ->
 
@@ -94,6 +94,10 @@ rusDiff = (a, b, stack = [], rename = true, garbage = {}) ->
   for k of rus
     if Object.keys(rus[k]).length is 0
       delete rus[k]
+
+  # Return false if there are no differences.
+  if Object.keys(rus).length == 0
+    rus = false
 
   rus
 
