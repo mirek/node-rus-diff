@@ -1,5 +1,7 @@
 assert = require 'assert'
 {diff} = require '../src'
+{apply} = require '../src'
+{clone} = require '../src'
 
 describe 'diff', ->
   it 'should produce no difference', ->
@@ -56,3 +58,16 @@ describe 'diff', ->
         "my.value.zz": 2
 
     assert.deepEqual r, diff a, b, ['my', 'value']
+
+  it 'should apply diff correctly on cloned objects', ->
+
+    f = (a, b) ->
+      d = diff a, b
+      assert.equal false, diff apply(clone(a), d), b
+
+    f {foo:1}, {foo:1}
+    f {foo:1}, {foo:2}
+    f {foo:1}, {foo:'x'}
+    f {foo:1}, {bar:1}
+    f {foo:{bar:'z'}}, {bar:1}
+    f {foo:{bar:'z'}}, {foo:{foo:'z'}}

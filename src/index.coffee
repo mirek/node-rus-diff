@@ -15,11 +15,7 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
 
   # Make sure we're working on an array stack. At the root invocation it can be string,
   # null, false, undefined or an array.
-  if !stack? or stack is ''
-    stack = []
-  else
-    unless Array.isArray(stack)
-      stack = stack.toString().split('.')
+  stack = arrize(stack)
 
   aKeys = Object.keys(a).sort()
   bKeys = Object.keys(b).sort()
@@ -114,33 +110,100 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
 
   delta
 
-# clone = (a) ->
-#   switch
-#   when not a? or typeof a isnt 'object'
-#     a
-#   when a instanceof Date
-#     new Date(a.getTime())
-#   when 
-#     if a instanceof RegExp
-#       f = ''
-#       f += 'g' if a.global?
-#       f += 'i' if a.ignoreCase?
-#       f += 'm' if a.multiline?
-#       f += 'y' if a.sticky?
-#       new RegExp(a.source, f) 
-#   else
-#     b = new a.constructor
-#     for k, v of a
-#       b[k] = clone v
-#     b
-# 
-# apply = (a, delta) ->
-#   if delta?
-#     if delta.$rename?
-#     if delta.$unset?
-#     if delta.$set?
-#     if delta.$inc?
-#   a
+clone = (a) ->
+  switch
+    when (not a?) or (typeof(a) isnt 'object')
+      a
+    when (a instanceof Date)
+      new Date(a.getTime())
+    when (a instanceof RegExp)
+      f = ''
+      f += 'g' if a.global?
+      f += 'i' if a.ignoreCase?
+      f += 'm' if a.multiline?
+      f += 'y' if a.sticky?
+      new RegExp(a.source, f) 
+    else
+      b = new a.constructor
+      for k, v of a
+        b[k] = clone v
+      b
+
+resolve = (a, path) ->
+  if toString.call(path) is '[object String]'
+    key
+
+# @return Cloned or created array.
+arrize = (path, glue = '.') ->
+  if !path? or path is ''
+    []
+  else
+    if Array.isArray(path)
+      path.slice 0
+    else
+      path.toString().split(glue)
+
+# @return [Array] Tuple with two elements, first is an object and second is an array with last component or multiple unresolved components.
+resolve = (a, path) ->
+  stack = arrize path
+
+  # We will always resolve to at least single name.
+  last = [stack.pop()]
+
+  # Please note we can stop resolve before reaching
+  # last element. If this is the case last will have
+  # multiple components.
+  e = a
+  while (k = stack.shift()) isnt undefined
+    if e[k] isnt undefined
+      e = e[k]
+    else
+      stack.unshift(k)
+      break
+
+  # Put all unresolved components into last.
+  while (k = stack.pop()) isnt undefined
+    last.unshift(k)
+
+  [e, last]
+
+# Apply delta diff on JSON object.
+apply = (a, delta) ->
+  if delta?
+    if delta.$rename?
+      for k, v of delta.$rename
+        [o1, n1] = resolve a, k
+        [o2, n2] = resolve a, v
+        if o1? and n1.length == 1
+          if o2? and n2.length == 1
+            o2[n2[0]] = o1[n1[0]]
+            delete o1[n1[0]]
+          else
+            throw "#{o2}/#{n2} - couldn't resolve first for #{a} #{v}"
+        else
+          throw "#{o1}/#{n1} - couldn't resolve second for #{a} #{k}"
+    if delta.$set?
+      for k, v of delta.$set
+        [o, n] = resolve a, k
+        if o? and n.length == 1
+          o[n[0]] = v
+        else
+          throw "#{o}/#{n} - couldn't set for #{a} #{k}"
+    if delta.$inc?
+      for k, v of delta.$inc
+        [o, n] = resolve a, k
+        if o? and n.length == 1
+          o[n[0]] += v
+        else
+          throw "#{o}/#{n} - couldn't set for #{a} #{k}"
+    if delta.$unset?
+      for k, v of delta.$unset
+        [o, n] = resolve a, k
+        if o? and n.length == 1
+          delete o[n[0]]
+        else
+          throw "#{o}/#{n} - couldn't unset for #{a} #{k}"
+  a
 
 if module? and module.exports?
 
@@ -148,6 +211,8 @@ if module? and module.exports?
   module.exports.rusDiff = diff
 
   module.exports.diff = diff
-  # module.exports.clone = clone
-  # module.exports.apply = apply
+  module.exports.clone = clone
+  module.exports.apply = apply
+  module.exports.arrize = arrize
+  module.exports.resolve = resolve
 
