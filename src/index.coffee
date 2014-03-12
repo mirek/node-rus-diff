@@ -1,16 +1,14 @@
 
-# Difference between JSON objects.
+# Compute difference between two JSON objects.
 #
-# @param [Object] a
-# @param [Object] b
-# @param [Array|String] stack Optional scope.
-# @param [Object] options Set options.inc to true to have $inc for numbers instead of $set.
-#
+# @param [Object, Array] a
+# @param [Object, Array] b
+# @param [Array, String] stack Optional scope, ie. 'foo.bar', or ['foo', 'bar'].
+# @param [Object] options Options
+# @option options [Boolean] When true $inc diff result is enabled for numbers, default to false.
 # @param [Boolean] top Internal, marks root invocation. Used to invoke rename.
 # @param [Object] garbage Internal, holds removed values and their keys, used for renaming.
-#
-# @return [Object] Difference between b - a JSON objects or false if objects are the same.
-#
+# @return [Object] Difference between b and a JSON objects or false if they are the same.
 diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
 
   # Make sure we're working on an array stack. At the root invocation it can be string,
@@ -110,6 +108,10 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
 
   delta
 
+# Deep copy for JSON objects.
+#
+# @param [Object, Array] a Object to clone
+# @return [Object, Array] Cloned a object
 clone = (a) ->
   switch
     when (not a?) or (typeof(a) isnt 'object')
@@ -129,11 +131,11 @@ clone = (a) ->
         b[k] = clone v
       b
 
-resolve = (a, path) ->
-  if toString.call(path) is '[object String]'
-    key
-
-# @return Cloned or created array.
+# Convert a path into an array of components (key path).
+#
+# @param [Array, String] path
+# @param [String] glue Glue/separator.
+# @return [Array] Cloned or created array.
 arrize = (path, glue = '.') ->
   if !path? or path is ''
     []
@@ -143,7 +145,16 @@ arrize = (path, glue = '.') ->
     else
       path.toString().split(glue)
 
-# @return [Array] Tuple with two elements, first is an object and second is an array with last component or multiple unresolved components.
+# Resolve key path on an object.
+#
+# @example Example
+#   a = hello: in: nested: world: '!'
+#   console.log resolve a, 'hello.in.nested'
+#   # [ { nested: { world: '!' } }, [ 'nested' ] ]
+#
+# @param [Object] a An object to perform resolve on.
+# @param [Array, String] path Key path.
+# @return [Array] [obj, path] tuple where obj is a resolved object and path an array with last component or multiple unresolved components.
 resolve = (a, path) ->
   stack = arrize path
 
@@ -168,6 +179,10 @@ resolve = (a, path) ->
   [e, last]
 
 # Apply delta diff on JSON object.
+#
+# @param [Object] a An object to apply delta on
+# @param [Object] delta Diff to apply to a
+# @return [Object] a object with applied diff.
 apply = (a, delta) ->
   if delta?
     if delta.$rename?
