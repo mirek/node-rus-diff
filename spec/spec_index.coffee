@@ -2,6 +2,7 @@ assert = require 'assert'
 {diff} = require '../src'
 {apply} = require '../src'
 {clone} = require '../src'
+{resolve} = require '../src'
 
 describe 'diff', ->
   it 'should produce no difference', ->
@@ -71,3 +72,14 @@ describe 'diff', ->
     f {foo:1}, {bar:1}
     f {foo:{bar:'z'}}, {bar:1}
     f {foo:{bar:'z'}}, {foo:{foo:'z'}}
+
+  it 'should resolve with forced creation of containers', ->
+    a = {foo:1}
+    assert.deepEqual [{}, ['one']], resolve a, 'bar.force.one', force: true
+    assert.deepEqual {foo:1,bar:{force:{}}}, a
+    assert.deepEqual [{force:{}}, ['force2', 'one2']], resolve a, 'bar.force2.one2', force: false
+    assert.deepEqual [{}, ['name']], resolve a, ['alist', 0, 'insidelist', 0, 'name'], force: true
+    assert.deepEqual {foo:1,bar:{force:{}},alist:[{insidelist:[{}]}]}, a
+    assert.deepEqual [[], [0]], resolve a, ['alist2', 0], force: true
+    assert.deepEqual {foo:1,bar:{force:{}},alist:[{insidelist:[{}]}],alist2:[]}, a
+

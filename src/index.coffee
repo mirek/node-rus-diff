@@ -154,8 +154,10 @@ arrize = (path, glue = '.') ->
 #
 # @param [Object] a An object to perform resolve on.
 # @param [Array, String] path Key path.
+# @param [Object] options
+# @option options [Boolean] force Force creation of nested objects (or arrays for strictly number keys) if they don't exist. Default to false.
 # @return [Array] [obj, path] tuple where obj is a resolved object and path an array with last component or multiple unresolved components.
-resolve = (a, path) ->
+resolve = (a, path, options = {}) ->
   stack = arrize path
 
   # We will always resolve to at least single name.
@@ -163,7 +165,7 @@ resolve = (a, path) ->
 
   # Please note we can stop resolve before reaching
   # last element. If this is the case last will have
-  # multiple components.
+  # multiple components if not forced.
   e = a
   while (k = stack.shift()) isnt undefined
     if e[k] isnt undefined
@@ -172,9 +174,23 @@ resolve = (a, path) ->
       stack.unshift(k)
       break
 
-  # Put all unresolved components into last.
-  while (k = stack.pop()) isnt undefined
-    last.unshift(k)
+  if options.force
+    while (k = stack.shift()) isnt undefined
+
+      # If the key is a number, we're creating array container, othwerwise object.
+      # Number components can only be set explicitly and will never come from splitting a string
+      # so this behaviour is somehow explicitly controlled by the caller.
+      if (typeof stack[0] is 'number') or ((stack.length == 0) and (typeof last[0] is 'number'))
+        e[k] = []
+      else
+        e[k] = {}
+      e = e[k]
+
+  else
+
+    # Put all unresolved components into last.
+    while (k = stack.pop()) isnt undefined
+      last.unshift(k)
 
   [e, last]
 
@@ -199,7 +215,7 @@ apply = (a, delta) ->
           throw "#{o1}/#{n1} - couldn't resolve second for #{a} #{k}"
     if delta.$set?
       for k, v of delta.$set
-        [o, n] = resolve a, k
+        [o, n] = resolve a, k, force: true
         if o? and n.length == 1
           o[n[0]] = v
         else
