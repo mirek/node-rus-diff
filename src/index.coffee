@@ -137,13 +137,22 @@ clone = (a) ->
 # @param [String] glue Glue/separator.
 # @return [Array] Cloned or created array.
 arrize = (path, glue = '.') ->
-  if !path? or path is ''
-    []
-  else
+  (
     if Array.isArray(path)
       path.slice 0
     else
-      path.toString().split(glue)
+      switch path
+        when undefined, null, false, ''
+          []
+        else
+          path.toString().split(glue)
+  ).map (e) ->
+    switch e
+      when undefined, null, false, ''
+        null
+      else
+        e.toString()
+  .filter (e) -> e?
 
 # Resolve key path on an object.
 #
@@ -160,8 +169,10 @@ arrize = (path, glue = '.') ->
 resolve = (a, path, options = {}) ->
   stack = arrize path
 
-  # We will always resolve to at least single name.
-  last = [stack.pop()]
+  last = []
+
+  if stack.length > 0
+    last.unshift stack.pop()
 
   # Please note we can stop resolve before reaching
   # last element. If this is the case last will have

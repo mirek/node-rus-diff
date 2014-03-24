@@ -3,6 +3,7 @@ assert = require 'assert'
 {apply} = require '../src'
 {clone} = require '../src'
 {resolve} = require '../src'
+{arrize} = require '../src'
 
 describe 'diff', ->
   it 'should produce no difference', ->
@@ -83,3 +84,25 @@ describe 'diff', ->
     assert.deepEqual [[], [0]], resolve a, ['alist2', 0], force: true
     assert.deepEqual {foo:1,bar:{force:{}},alist:[{insidelist:[{}]}],alist2:[]}, a
 
+  it 'should arrize', ->
+    assert.deepEqual [], arrize []
+    assert.deepEqual [], arrize ['']
+    assert.deepEqual [], arrize [null]
+    assert.deepEqual [], arrize [false]
+    assert.deepEqual [], arrize [undefined]
+    assert.deepEqual [], arrize()
+    assert.deepEqual [], arrize ''
+    assert.deepEqual [], arrize null
+    assert.deepEqual [], arrize false
+    assert.deepEqual [], arrize undefined
+
+  it 'should resolve empty keypath', ->
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, ['']
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, [null]
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, [false]
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, [undefined]
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, []
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, ''
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, null
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, false
+    assert.deepEqual [{foo:1}, []], resolve {foo:1}, undefined
