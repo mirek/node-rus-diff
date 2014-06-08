@@ -16,7 +16,7 @@ Produced diff is MongoDB compatible and can be used to modify documents with `co
 
 | a | diff | apply(a, diff) |
 |---|---|-------------|
-| `{}` | `{ $inc: { 'foo.bar': 1 } }` | `{ foo: { bar: 1 } }` |
+| `{ }` | `{ $inc: { 'foo.bar': 1 } }` | `{ foo: { bar: 1 } }` |
 | `{ foo: 1.5 }` | `{ $inc: { foo: -2.5 } }` | `{ foo: -1 }` |
 | `{ foo: true }` | `{ $rename: { foo: 'bar' } }` | `{ bar: true }` |
 | `{ foo: 1, bar: 2 }` | `{ $unset: { foo: true }, $set: { 'a.b': 3 } }` | `{ bar: 2, a: { b: 3 } }` |
