@@ -74,6 +74,9 @@ describe 'diff', ->
     f {foo:{bar:'z'}}, {bar:1}
     f {foo:{bar:'z'}}, {foo:{foo:'z'}}
 
+  it 'should apply $inc to non-existing nested value', ->
+    assert.deepEqual { "foo": { "bar": 1 } }, apply({}, { "$inc": { "foo.bar": 1 } })
+
   it 'should resolve with forced creation of containers', ->
     a = {foo:1}
     assert.deepEqual [{}, ['one']], resolve a, 'bar.force.one', force: true

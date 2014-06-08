@@ -5,14 +5,17 @@
 # @param [Object, Array] b
 # @param [Array, String] stack Optional scope, ie. 'foo.bar', or ['foo', 'bar'].
 # @param [Object] options Options
-# @option options [Boolean] When true $inc diff result is enabled for numbers, default to false.
+# @option options [Boolean] inc When true $inc diff result is enabled for
+#   numbers, default to false.
 # @param [Boolean] top Internal, marks root invocation. Used to invoke rename.
-# @param [Object] garbage Internal, holds removed values and their keys, used for renaming.
-# @return [Object] Difference between b and a JSON objects or false if they are the same.
+# @param [Object] garbage Internal, holds removed values and their keys, used
+#   for renaming.
+# @return [Object] Difference between b and a JSON objects or false if they are
+#   the same.
 diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
 
-  # Make sure we're working on an array stack. At the root invocation it can be string,
-  # null, false, undefined or an array.
+  # Make sure we're working on an array stack. At the root invocation it can be
+  # string, null, false, undefined or an array.
   stack = arrize(stack)
 
   aKeys = Object.keys(a).sort()
@@ -52,7 +55,9 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
       bVal = b[bKey]
       if aVal isnt bVal
         if (typeof aVal is 'object') and (typeof bVal is 'object')
-          for k, v of diff(aVal, bVal, stack.concat([aKey]), options, false, garbage)
+          for k, v of diff(
+            aVal, bVal, stack.concat([aKey]), options, false, garbage
+          )
 
             # Merge changes
             for k2, v2 of v
@@ -60,13 +65,18 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
         else
 
           # TODO: What about Infinity/-Infinity?
-          if (options.inc is true) and (typeof aVal is 'number') and (typeof bVal is 'number')
+          if (
+            (options.inc is true) and
+            (typeof aVal is 'number') and
+            (typeof bVal is 'number')
+          )
             incA aI, bVal - aVal
           else
 
-            # NOTE: aVal doesn't go to garbage (as a potential rename) because MongoDB 2.4.x doesn't allow $set
-            #       and $rename for the same key paths giving MongoDB error 10150: "exception: Field name duplication
-            #       not allowed with modifiers"
+            # NOTE: aVal doesn't go to garbage (as a potential rename) because
+            #       MongoDB 2.4.x doesn't allow $set and $rename for the same
+            #       key paths giving MongoDB error 10150: "exception: Field
+            #       name duplication not allowed with modifiers"
             setB bI
       ++aI
       ++bI
@@ -88,9 +98,13 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
 
   if top
 
-    # Diff has been completed, root invocation wants to do the rename, collect from garbage
-    # whatever we can.
-    collect = ([k, key] for k, v of delta.$set when garbage[v]? and (key = garbage[v].pop()))
+    # Diff has been completed, root invocation wants to do the rename, collect
+    # from garbage whatever we can.
+    collect = (
+      [k, key] for k, v of delta.$set when (
+        garbage[v]? and (key = garbage[v].pop())
+      )
+    )
     for e in collect
       [k, key] = e
       delta.$rename[key] = k
@@ -124,7 +138,7 @@ clone = (a) ->
       f += 'i' if a.ignoreCase?
       f += 'm' if a.multiline?
       f += 'y' if a.sticky?
-      new RegExp(a.source, f) 
+      new RegExp(a.source, f)
     else
       b = new a.constructor
       for k, v of a
@@ -164,8 +178,10 @@ arrize = (path, glue = '.') ->
 # @param [Object] a An object to perform resolve on.
 # @param [Array, String] path Key path.
 # @param [Object] options
-# @option options [Boolean] force Force creation of nested objects (or arrays for strictly number keys) if they don't exist. Default to false.
-# @return [Array] [obj, path] tuple where obj is a resolved object and path an array with last component or multiple unresolved components.
+# @option options [Boolean] force Force creation of nested objects (or arrays
+#   for strictly number keys) if they don't exist. Default to false.
+# @return [Array] [obj, path] tuple where obj is a resolved object and path an
+#   array with last component or multiple unresolved components.
 resolve = (a, path, options = {}) ->
   stack = arrize path
 
@@ -188,10 +204,12 @@ resolve = (a, path, options = {}) ->
   if options.force
     while (k = stack.shift()) isnt undefined
 
-      # If the key is a number, we're creating array container, othwerwise object.
-      # Number components can only be set explicitly and will never come from splitting a string
-      # so this behaviour is somehow explicitly controlled by the caller.
-      if (typeof stack[0] is 'number') or ((stack.length == 0) and (typeof last[0] is 'number'))
+      # If the key is a number, we're creating array container, othwerwise
+      # an object. Number components can only be set explicitly and will never
+      # come from splitting a string so this behaviour is somehow explicitly
+      # controlled by the caller (by using numbers vs strings).
+      if ( (typeof stack[0] is 'number') or
+           ((stack.length == 0) and (typeof last[0] is 'number')) )
         e[k] = []
       else
         e[k] = {}
@@ -221,30 +239,31 @@ apply = (a, delta) ->
             o2[n2[0]] = o1[n1[0]]
             delete o1[n1[0]]
           else
-            throw "#{o2}/#{n2} - couldn't resolve first for #{a} #{v}"
+            throw new Error "#{o2}/#{n2} - couldn't resolve first for #{a} #{v}"
         else
-          throw "#{o1}/#{n1} - couldn't resolve second for #{a} #{k}"
+          throw new Error "#{o1}/#{n1} - couldn't resolve second for #{a} #{k}"
     if delta.$set?
       for k, v of delta.$set
         [o, n] = resolve a, k, force: true
         if o? and n.length == 1
           o[n[0]] = v
         else
-          throw "#{o}/#{n} - couldn't set for #{a} #{k}"
+          throw new Error "#{o}/#{n} - couldn't set for #{a} #{k}"
     if delta.$inc?
       for k, v of delta.$inc
-        [o, n] = resolve a, k
+        [o, n] = resolve a, k, force: true
         if o? and n.length == 1
+          o[n[0]] ?= 0
           o[n[0]] += v
         else
-          throw "#{o}/#{n} - couldn't set for #{a} #{k}"
+          throw new Error "#{o}/#{n} - couldn't set for #{a} #{k}"
     if delta.$unset?
       for k, v of delta.$unset
         [o, n] = resolve a, k
         if o? and n.length == 1
           delete o[n[0]]
         else
-          throw "#{o}/#{n} - couldn't unset for #{a} #{k}"
+          throw new Error "#{o}/#{n} - couldn't unset for #{a} #{k}"
   a
 
 if module? and module.exports?
@@ -257,4 +276,3 @@ if module? and module.exports?
   module.exports.apply = apply
   module.exports.arrize = arrize
   module.exports.resolve = resolve
-

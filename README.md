@@ -4,6 +4,23 @@
 
 Produced diff is MongoDB compatible and can be used to modify documents with `collection.update(...)`.
 
+## Examples
+
+| a | b | diff(a, b) | options |
+|---|---|------------|---------|
+| `{ "foo": 1 }` | `{ "bar": 1 }` | `{ '$rename': { foo: 'bar' } }` | |
+| `{ "foo": 1 }` | `{ "bar": 2 }` | `{ "$unset": { foo: true }, "$set": { bar: 2 } }` | |
+| `{ "foo": 1 }` | `{}` | `{ '$unset': { foo: true } }` | |
+| `{ "foo": 1 }` | `{ "foo": 2.5 }` | `{ '$set': { foo: 2.5 } }` | |
+| `{ "foo": 1 }` | `{ "foo": 2.5 }` | `{ '$inc': { foo: 1.5 } }` | `{ "inc": true }` |
+
+| a | diff | apply(a, diff) |
+|---|---|-------------|
+| `{}` | `{ "$inc": { "foo.bar": 1 } }` | `{ foo: { bar: 1 } }` |
+| `{ "foo": 1.5 }` | `{ "$inc": { "foo": -2.5 } }` | `{ foo: -1 }` |
+| `{ "foo": true }` | `{ "$rename": { "foo": "bar" } }` | `{ bar: true }` |
+| `{ "foo": 1, "bar": 2 }` | `{ "$unset": { "foo": true }, "$set": { "a.b": 3 } }` | `{ bar: 2, a: { b: 3 } }` |
+
 ## Usage
 
 Install `rus-diff` in your project:
@@ -51,7 +68,7 @@ Produces diff:
 
     { '$rename': { 'foo.bb.inner.to_rename': 'renamed' },
       '$unset': { bar: true, 'foo.aa': true, 'foo.bb.inner.this_is_a': true },
-      '$set': 
+      '$set':
        { bar2: 2,
          'foo.bb.inner.this_is_b': 2,
          'foo.cc': { new_val: 2 },
@@ -88,7 +105,7 @@ And some less important, utility functions:
     // For example, having a document:
     //
     //   var a = { hello: { in: { nested: { world: '!' } } } }
-    // 
+    //
     //   resolve a, 'hello.in.nested'
     //
     // Returns [ { nested: { world: '!' } }, [ 'nested' ] ]
