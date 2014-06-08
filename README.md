@@ -8,18 +8,18 @@ Produced diff is MongoDB compatible and can be used to modify documents with `co
 
 | a | b | diff(a, b) | options |
 |---|---|------------|---------|
-| `{ "foo": 1 }` | `{ "bar": 1 }` | `{ '$rename': { foo: 'bar' } }` | |
-| `{ "foo": 1 }` | `{ "bar": 2 }` | `{ "$unset": { foo: true }, "$set": { bar: 2 } }` | |
-| `{ "foo": 1 }` | `{}` | `{ '$unset': { foo: true } }` | |
-| `{ "foo": 1 }` | `{ "foo": 2.5 }` | `{ '$set': { foo: 2.5 } }` | |
-| `{ "foo": 1 }` | `{ "foo": 2.5 }` | `{ '$inc': { foo: 1.5 } }` | `{ "inc": true }` |
+| `{ foo: 1 }` | `{ bar: 2 }` | `{ $unset: { foo: true }, $set: { bar: 2 } }` | |
+| `{ foo: 1 }` | `{ bar: 1 }` | `{ $rename: { foo: 'bar' } }` | |
+| `{ foo: 1 }` | `{ }` | `{ $unset: { foo: true } }` | |
+| `{ foo: 1 }` | `{ foo: 2.5 }` | `{ $set: { foo: 2.5 } }` | |
+| `{ foo: 1 }` | `{ foo: 2.5 }` | `{ $inc: { foo: 1.5 } }` | `{ inc: true }` |
 
 | a | diff | apply(a, diff) |
 |---|---|-------------|
-| `{}` | `{ "$inc": { "foo.bar": 1 } }` | `{ foo: { bar: 1 } }` |
-| `{ "foo": 1.5 }` | `{ "$inc": { "foo": -2.5 } }` | `{ foo: -1 }` |
-| `{ "foo": true }` | `{ "$rename": { "foo": "bar" } }` | `{ bar: true }` |
-| `{ "foo": 1, "bar": 2 }` | `{ "$unset": { "foo": true }, "$set": { "a.b": 3 } }` | `{ bar: 2, a: { b: 3 } }` |
+| `{}` | `{ $inc: { 'foo.bar': 1 } }` | `{ foo: { bar: 1 } }` |
+| `{ foo: 1.5 }` | `{ $inc: { foo: -2.5 } }` | `{ foo: -1 }` |
+| `{ foo: true }` | `{ $rename: { foo: 'bar' } }` | `{ bar: true }` |
+| `{ foo: 1, bar: 2 }` | `{ $unset: { foo: true }, $set: { 'a.b': 3 } }` | `{ bar: 2, a: { b: 3 } }` |
 
 ## Usage
 
