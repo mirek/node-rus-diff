@@ -6,20 +6,24 @@ Produced diff is MongoDB compatible and can be used to modify documents with `co
 
 ## Examples
 
-| a | b | diff(a, b) | options |
-|---|---|------------|---------|
-| `{ foo: 1 }` | `{ bar: 2 }` | `{ $unset: { foo: true }, $set: { bar: 2 } }` | |
-| `{ foo: 1 }` | `{ bar: 1 }` | `{ $rename: { foo: 'bar' } }` | |
-| `{ foo: 1 }` | `{ }` | `{ $unset: { foo: true } }` | |
-| `{ foo: 1 }` | `{ foo: 2.5 }` | `{ $set: { foo: 2.5 } }` | |
-| `{ foo: 1 }` | `{ foo: 2.5 }` | `{ $inc: { foo: 1.5 } }` | `{ inc: true }` |
+### Diff
 
-| a | diff | apply(a, diff) |
-|---|---|-------------|
-| `{ }` | `{ $inc: { 'foo.bar': 1 } }` | `{ foo: { bar: 1 } }` |
-| `{ foo: 1.5 }` | `{ $inc: { foo: -2.5 } }` | `{ foo: -1 }` |
-| `{ foo: true }` | `{ $rename: { foo: 'bar' } }` | `{ bar: true }` |
-| `{ foo: 1, bar: 2 }` | `{ $unset: { foo: true }, $set: { 'a.b': 3 } }` | `{ bar: 2, a: { b: 3 } }` |
+| a       | b         | diff(a, b)                     | options      |
+|---------|-----------|--------------------------------|--------------|
+| `{a:1}` | `{b:2}`   | `{$unset:{a:true},$set:{b:2}}` |              |
+| `{a:1}` | `{b:1}`   | `{$rename:{a:'b'}}`            |              |
+| `{a:1}` | `{}`      | `{$unset:{a:true}}`            |              |
+| `{a:1}` | `{a:2.5}` | `{$set:{a:2.5}}`               |              |
+| `{a:1}` | `{a:2.5}` | `{$inc:{a:1.5}}`               | `{inc:true}` |
+
+### Apply
+
+| a           | diff                               | apply(a, diff)  |
+|-------------|------------------------------------|-----------------|
+| `{}`        | `{$inc:{'a.b':1}}`                 | `{a:{b:1}}`     |
+| `{a:1.5}`   | `{$inc:{a:-2.5}}`                  | `{a:-1}`        |
+| `{a:true}`  | `{$rename:{a:'b'}}`                | `{ bar: true }` |
+| `{a:1,b:2}` | `{$unset:{a:true},$set:{'c.d':3}}` | `{b:2,c:{d:3}}` |
 
 ## Usage
 
@@ -118,3 +122,27 @@ And some less important, utility functions:
 
     // Convert non array path into array based key path.
     arrize(path)
+
+# License
+
+    The MIT License (MIT)
+
+    Copyright (c) 2014 Mirek Rusin
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
