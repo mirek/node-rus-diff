@@ -284,6 +284,7 @@ module.exports = {
   arrize
   clone
   diff
+  isRealNumber
   resolve
 
   # NOTE: For compatibility, will be removed on next non api compatible release.
