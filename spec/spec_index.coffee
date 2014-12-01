@@ -61,6 +61,20 @@ describe 'diff', ->
 
     assert.deepEqual r, diff a, b, ['my', 'value']
 
+  it 'should work with dates', ->
+    a = new Date 1417434298178
+    a2 = new Date 1417434298178
+    b = new Date 1417434298179
+    assert.equal false, diff { foo: a }, { foo: a2 }
+    assert.deepEqual { $set: { foo: b } }, diff { foo: a }, { foo: b }
+
+  it 'should work with regexps', ->
+    a = /foo/
+    a2 = /foo/
+    b = /foo/g
+    assert.equal false, diff { foo: a }, { foo: a2 }
+    assert.deepEqual { $set: { foo: b } }, diff { foo: a }, { foo: b }
+
   it 'should apply diff correctly on cloned objects', ->
 
     f = (a, b) ->
