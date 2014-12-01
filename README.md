@@ -1,4 +1,4 @@
-## Summary
+## Summary [![Build Status](https://travis-ci.org/mirek/node-json-criteria.png?branch=master)](https://travis-ci.org/mirek/node-rus-diff)
 
 (R)emove-(U)pdate-(S)et JSON diff library can be used standalone to compute difference between two JSON objects.
 
