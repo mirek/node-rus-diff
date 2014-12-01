@@ -64,6 +64,10 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
         when aVal is bVal
           undefined # pass
 
+        # Hack around typeof null is 'object' weirdness
+        when (aVal? and not bVal?) or (not aVal? and bVal?)
+          setB bI
+
         # Special case for Date support
         when (aVal instanceof Date) and (bVal instanceof Date)
           if +aVal isnt +bVal

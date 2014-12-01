@@ -72,6 +72,13 @@ describe 'diff', ->
     assert.equal false, $.diff { foo: a }, { foo: a2 }
     assert.deepEqual { $set: { foo: b } }, $.diff { foo: a }, { foo: b }
 
+  it 'should work with nulls', ->
+    a = new Date
+    assert.deepEqual { $set: { foo: null } }, $.diff { foo: 1 }, { foo: null }
+    assert.deepEqual { $set: { foo: null } }, $.diff { foo: a }, { foo: null }
+    assert.deepEqual { $set: { foo: 1 } }, $.diff { foo: null }, { foo: 1 }
+    assert.deepEqual { $set: { foo: a } }, $.diff { foo: null }, { foo: a }
+
   it 'should apply diff correctly on cloned objects', ->
 
     f = (a, b) ->
