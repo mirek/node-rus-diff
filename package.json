@@ -4,7 +4,7 @@
   "description": "MongoDB compatible JSON diff.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "bin/grunt test"
+    "test": "mocha --compilers coffee:coffee-script/register spec/**/*"
   },
   "repository": {
     "type": "git",
