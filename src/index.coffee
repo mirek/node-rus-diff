@@ -1,4 +1,9 @@
 
+# Check if one or more arguments are real numbers (no NaN or +/-Infinity).
+isRealNumber = (args...) ->
+  args.every (e) ->
+    (typeof e is 'number') and (isNaN(e) is false) and (e isnt +Infinity) and (e isnt -Infinity)
+
 # Compute difference between two JSON objects.
 #
 # @param [Object, Array] a
@@ -53,23 +58,31 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
     if aKey is bKey
       aVal = a[aKey]
       bVal = b[bKey]
-      if aVal isnt bVal
-        if (typeof aVal is 'object') and (typeof bVal is 'object')
-          for k, v of diff(
-            aVal, bVal, stack.concat([aKey]), options, false, garbage
-          )
+      switch
 
-            # Merge changes
-            for k2, v2 of v
-              delta[k][k2] = v2
+        # Skip if values (scalars) are the same
+        when aVal is bVal
+          undefined # pass
+
+        # Special case for Date support
+        when (aVal instanceof Date) and (bVal instanceof Date)
+          if +aVal isnt +bVal
+            setB bI
+
+        # Special case for RegExp support
+        when (aVal instanceof RegExp) and (bVal instanceof RegExp)
+          if "#{aVal}" isnt "#{bVal}"
+            setB bI
+
+        # Dive into any other objects
+        when (typeof aVal is 'object') and (typeof bVal is 'object')
+          for k, v of diff(aVal, bVal, stack.concat([aKey]), options, false, garbage)
+            delta[k][k2] = v2 for k2, v2 of v # Merge changes
+
         else
 
-          # TODO: What about Infinity/-Infinity?
-          if (
-            (options.inc is true) and
-            (typeof aVal is 'number') and
-            (typeof bVal is 'number')
-          )
+          # Support $inc if it was (explicitly) enabled.
+          if (options.inc is true) and isRealNumber(aVal, bVal)
             incA aI, bVal - aVal
           else
 
@@ -266,13 +279,13 @@ apply = (a, delta) ->
           throw new Error "#{o}/#{n} - couldn't unset for #{a} #{k}"
   a
 
-if module? and module.exports?
+module.exports = {
+  apply
+  arrize
+  clone
+  diff
+  resolve
 
   # NOTE: For compatibility, will be removed on next non api compatible release.
-  module.exports.rusDiff = diff
-
-  module.exports.diff = diff
-  module.exports.clone = clone
-  module.exports.apply = apply
-  module.exports.arrize = arrize
-  module.exports.resolve = resolve
+  rusDiff: diff
+}
