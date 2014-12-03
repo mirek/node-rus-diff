@@ -31,5 +31,8 @@
     "grunt-contrib-coffee": "^0.10.1",
     "grunt-codo": "^0.1.0",
     "grunt-contrib-watch": "^0.5.3"
+  },
+  "dependencies": {
+    "json-hash": "0.0.4"
   }
 }

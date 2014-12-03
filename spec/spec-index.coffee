@@ -79,6 +79,14 @@ describe 'diff', ->
     assert.deepEqual { $set: { foo: 1 } }, $.diff { foo: null }, { foo: 1 }
     assert.deepEqual { $set: { foo: a } }, $.diff { foo: null }, { foo: a }
 
+  # it 'should remove array elements', ->
+  #   assert.deepEqual {foo:[1,2,3,5]}, $.apply {foo:[1,2,3,5,7]}, {$rename:{'foo.4':'foo.3'}}
+  #   assert.deepEqual {foo:[1,2,5,7]}, $.apply {foo:[1,2,3,5,7]}, {$unset:{'foo.2':true}}
+
+  it 'should rename nested objects', ->
+    assert.deepEqual { $rename: { foo: 'bar' } }, $.diff { foo: { a: 1, b: 2 } }, { bar: { a: 1, b: 2 } }
+    assert.deepEqual { $rename: { foo: 'bar', foo2: 'bar2' } }, $.diff { foo: {a:1}, foo2: {a:2} }, { bar: {a:1}, bar2: {a:2} }
+
   it 'should apply diff correctly on cloned objects', ->
 
     f = (a, b) ->

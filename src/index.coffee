@@ -1,4 +1,6 @@
 
+jsonHash = require 'json-hash'
+
 # Check if one or more arguments are real numbers (no NaN or +/-Infinity).
 isRealNumber = (args...) ->
   args.every (e) ->
@@ -41,7 +43,8 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
   unsetA = (i) ->
     key = (stack.concat aKeys[i]).join('.')
     delta.$unset[key] = true
-    (garbage[ a[aKeys[i]] ] ||= []).push key
+    h = jsonHash.digest a[aKeys[i]]
+    (garbage[h] ||= []).push key
 
   setB = (i) ->
     key = (stack.concat bKeys[i]).join('.')
@@ -119,7 +122,8 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
     # from garbage whatever we can.
     collect = (
       [k, key] for k, v of delta.$set when (
-        garbage[v]? and (key = garbage[v].pop())
+        h = jsonHash.digest v
+        garbage[h]? and (key = garbage[h].pop())
       )
     )
     for e in collect
@@ -247,6 +251,7 @@ resolve = (a, path, options = {}) ->
 # @return [Object] a object with applied diff.
 apply = (a, delta) ->
   if delta?
+
     if delta.$rename?
       for k, v of delta.$rename
         [o1, n1] = resolve a, k
@@ -259,6 +264,7 @@ apply = (a, delta) ->
             throw new Error "#{o2}/#{n2} - couldn't resolve first for #{a} #{v}"
         else
           throw new Error "#{o1}/#{n1} - couldn't resolve second for #{a} #{k}"
+
     if delta.$set?
       for k, v of delta.$set
         [o, n] = resolve a, k, force: true
@@ -266,6 +272,7 @@ apply = (a, delta) ->
           o[n[0]] = v
         else
           throw new Error "#{o}/#{n} - couldn't set for #{a} #{k}"
+
     if delta.$inc?
       for k, v of delta.$inc
         [o, n] = resolve a, k, force: true
@@ -274,6 +281,7 @@ apply = (a, delta) ->
           o[n[0]] += v
         else
           throw new Error "#{o}/#{n} - couldn't set for #{a} #{k}"
+
     if delta.$unset?
       for k, v of delta.$unset
         [o, n] = resolve a, k
@@ -281,6 +289,8 @@ apply = (a, delta) ->
           delete o[n[0]]
         else
           throw new Error "#{o}/#{n} - couldn't unset for #{a} #{k}"
+
+
   a
 
 module.exports = {
