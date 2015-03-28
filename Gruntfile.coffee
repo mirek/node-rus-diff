@@ -1,5 +1,6 @@
 
 module.exports = (grunt) ->
+
   grunt.loadNpmTasks 'grunt-mocha-test'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-watch'
@@ -15,8 +16,8 @@ module.exports = (grunt) ->
 
     watch:
       coffee:
-        files: ['src/index.coffee'],
-        tasks: ['coffee']
+        files: [ 'src/index.coffee' ]
+        tasks: [ 'coffee' ]
 
     mochaTest:
       test:
@@ -24,6 +25,7 @@ module.exports = (grunt) ->
           reporter: 'spec'
           require: [
             'coffee-script'
+            'babel/polyfill'
           ]
         src: ['spec/**/*.coffee']
 

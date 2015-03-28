@@ -1,8 +1,10 @@
 
 assert = require 'assert'
+bson = require 'bson'
 $ = require '../src'
 
 describe 'diff', ->
+
   it 'should produce no difference', ->
     assert.equal false, $.diff [], []
     assert.equal false, $.diff [1], [1]
@@ -135,6 +137,18 @@ describe 'diff', ->
     assert.deepEqual [{foo:1}, []], $.resolve {foo:1}, null
     assert.deepEqual [{foo:1}, []], $.resolve {foo:1}, false
     assert.deepEqual [{foo:1}, []], $.resolve {foo:1}, undefined
+
+  it 'should work with undefined', ->
+    assert.deepEqual $.diff({ foo: null }, { foo: undefined }), { $set: { foo: undefined } }
+
+  it 'should work with bson types', ->
+    a = new bson.ObjectId
+    b = new bson.ObjectId
+    assert.deepEqual $.diff({foo:a}, {foo:b}), { $set: { foo: b } }
+
+    a = new bson.ObjectId '5516058702c536d6068cabb7'
+    b = new bson.ObjectId '5516058702c536d6068cabb7'
+    assert.equal $.diff({foo:a}, {foo:b}), false
 
   describe 'isRealNumber', ->
 

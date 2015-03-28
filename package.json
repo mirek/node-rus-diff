@@ -23,16 +23,18 @@
   },
   "homepage": "https://github.com/mirek/node-rus-diff",
   "devDependencies": {
-    "grunt-mocha-test": "^0.9.4",
-    "mocha": "^1.17.1",
+    "babel": "^4.7.16",
+    "bson": "^0.3.1",
+    "coffee-script": "^1.9.1",
+    "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
-    "grunt": "^0.4.3",
-    "coffee-script": "^1.7.1",
-    "grunt-contrib-coffee": "^0.10.1",
-    "grunt-codo": "^0.1.0",
-    "grunt-contrib-watch": "^0.5.3"
+    "grunt-codo": "^0.2.0",
+    "grunt-contrib-coffee": "^0.13.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.2.1"
   },
   "dependencies": {
-    "json-hash": "0.0.4"
+    "json-hash": "^1.1.0"
   }
 }

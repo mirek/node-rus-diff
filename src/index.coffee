@@ -1,10 +1,14 @@
 
-jsonHash = require 'json-hash'
+{ digest } = require 'json-hash'
 
 # Check if one or more arguments are real numbers (no NaN or +/-Infinity).
 isRealNumber = (args...) ->
   args.every (e) ->
     (typeof e is 'number') and (isNaN(e) is false) and (e isnt +Infinity) and (e isnt -Infinity)
+
+# Check if object is plain object.
+isPlainObject = (a) ->
+  a isnt null and typeof a is 'object' and a.constructor is Object
 
 # Compute difference between two JSON objects.
 #
@@ -43,7 +47,7 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
   unsetA = (i) ->
     key = (stack.concat aKeys[i]).join('.')
     delta.$unset[key] = true
-    h = jsonHash.digest a[aKeys[i]]
+    h = digest a[aKeys[i]]
     (garbage[h] ||= []).push key
 
   setB = (i) ->
@@ -82,9 +86,13 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
             setB bI
 
         # Dive into any other objects
-        when (typeof aVal is 'object') and (typeof bVal is 'object')
+        when isPlainObject(aVal) and isPlainObject(bVal)
           for k, v of diff(aVal, bVal, stack.concat([aKey]), options, false, garbage)
             delta[k][k2] = v2 for k2, v2 of v # Merge changes
+
+        # Skip non-plain, same objects
+        when not isPlainObject(aVal) and not isPlainObject(bVal) and digest(aVal) is digest(bVal)
+          undefined
 
         else
 
@@ -122,7 +130,7 @@ diff = (a, b, stack = [], options = {}, top = true, garbage = {}) ->
     # from garbage whatever we can.
     collect = (
       [k, key] for k, v of delta.$set when (
-        h = jsonHash.digest v
+        h = digest v
         garbage[h]? and (key = garbage[h].pop())
       )
     )
