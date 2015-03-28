@@ -1,6 +1,6 @@
 {
   "name": "rus-diff",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "MongoDB compatible JSON diff.",
   "main": "lib/index.js",
   "scripts": {
