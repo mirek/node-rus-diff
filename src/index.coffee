@@ -298,7 +298,6 @@ apply = (a, delta) ->
         else
           throw new Error "#{o}/#{n} - couldn't unset for #{a} #{k}"
 
-
   a
 
 module.exports = {

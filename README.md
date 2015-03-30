@@ -31,7 +31,14 @@ Install `rus-diff` in your project:
 
     npm install rus-diff --save
 
+Install ES6 compatibility layer:
+
+    npm install babel --save
+
 Usage example:
+
+    // Add ES6 polyfills.
+    require('babel/polyfill')
 
     var diff = require('rus-diff').diff
 
