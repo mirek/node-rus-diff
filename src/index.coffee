@@ -223,12 +223,13 @@ resolve = (a, path, options = {}) ->
   # last element. If this is the case last will have
   # multiple components if not forced.
   e = a
-  while (k = stack.shift()) isnt undefined
-    if e[k] isnt undefined
-      e = e[k]
-    else
-      stack.unshift(k)
-      break
+  if e isnt null
+    while (k = stack.shift()) isnt undefined
+      if e[k] isnt undefined
+        e = e[k]
+      else
+        stack.unshift(k)
+        break
 
   if options.force
     while (k = stack.shift()) isnt undefined
@@ -237,8 +238,10 @@ resolve = (a, path, options = {}) ->
       # an object. Number components can only be set explicitly and will never
       # come from splitting a string so this behaviour is somehow explicitly
       # controlled by the caller (by using numbers vs strings).
-      if ( (typeof stack[0] is 'number') or
-           ((stack.length == 0) and (typeof last[0] is 'number')) )
+      if (
+        (typeof stack[0] is 'number') or
+        ((stack.length == 0) and (typeof last[0] is 'number'))
+      )
         e[k] = []
       else
         e[k] = {}

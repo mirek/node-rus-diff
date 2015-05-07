@@ -150,6 +150,17 @@ describe 'diff', ->
     b = new bson.ObjectId '5516058702c536d6068cabb7'
     assert.equal $.diff({foo:a}, {foo:b}), false
 
+  # describe 'others', ->
+  #
+  #   it 'should work with BSON ObjectId', ->
+  #     { ObjectId } = require 'bson/lib/bson/objectid'
+  #     d = {
+  #       _id: ObjectId()
+  #       foo: 'FOO'
+  #       bar: undefined
+  #     }
+  #     console.log $.diff d, {}
+
   describe 'isRealNumber', ->
 
     it 'should work with real numbers', ->

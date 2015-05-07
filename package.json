@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/mirek/node-rus-diff",
   "devDependencies": {
-    "babel": "^4.7.16",
+    "babel": "^5.2.16",
     "bson": "^0.3.1",
     "coffee-script": "^1.9.1",
     "grunt": "^0.4.5",
