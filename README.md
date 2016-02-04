@@ -22,7 +22,7 @@ Produced diff is MongoDB compatible and can be used to modify documents with `co
 |-------------|------------------------------------|-----------------|
 | `{}`        | `{$inc:{'a.b':1}}`                 | `{a:{b:1}}`     |
 | `{a:1.5}`   | `{$inc:{a:-2.5}}`                  | `{a:-1}`        |
-| `{a:true}`  | `{$rename:{a:'b'}}`                | `{ bar: true }` |
+| `{a:true}`  | `{$rename:{a:'b'}}`                | `{ b: true }`   |
 | `{a:1,b:2}` | `{$unset:{a:true},$set:{'c.d':3}}` | `{b:2,c:{d:3}}` |
 
 ## Usage
