@@ -8,7 +8,7 @@ isRealNumber = (args...) ->
 
 # Check if object is plain object.
 isPlainObject = (a) ->
-  a isnt null and typeof a is 'object' and a.constructor is Object
+  a isnt null and typeof a is 'object'
 
 # Compute difference between two JSON objects.
 #

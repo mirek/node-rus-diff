@@ -144,7 +144,7 @@ describe 'diff', ->
   it 'should work with bson types', ->
     a = new bson.ObjectId
     b = new bson.ObjectId
-    assert.deepEqual $.diff({foo:a}, {foo:b}), { $set: { foo: b } }
+    assert.deepEqual $.diff({foo:a}, {foo:b}), { $set: { 'foo.id': b.id } }
 
     a = new bson.ObjectId '5516058702c536d6068cabb7'
     b = new bson.ObjectId '5516058702c536d6068cabb7'

@@ -19,3 +19,6 @@ describe 'diff', ->
 
   it 'should produce diff with undefined', ->
     y { $set: { foo: undefined } }, $.diff { foo: 1 }, { foo: undefined }
+
+  it 'should work on nested arrays', ->
+    y { $set: { 'x.0.z': false } }, $.diff { x: [ { y: true, z: true } ] }, { x: [ { y: true, z: false } ] }
