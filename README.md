@@ -1,3 +1,9 @@
+## Bugs
+
+* current version will not dive into nested arrays; if there is tiniest bit different between nested arrays, the diff will emit replacement for the whole nested array as a single op.
+* there is no way of specifying if an array should be compared as unordered set of elements or ordered list of elements
+* the code is in dated coffeescript, needs rewrite in modern js, ideally with ts/flow annotations.
+
 ## Summary [![Build Status](https://travis-ci.org/mirek/node-json-criteria.png?branch=master)](https://travis-ci.org/mirek/node-rus-diff)
 
 (R)emove-(U)pdate-(S)et JSON diff library can be used standalone to compute difference between two JSON objects.
